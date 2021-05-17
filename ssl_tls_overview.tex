@@ -25,7 +25,7 @@
   (#2)+(0,-\theseqlevel*\unitfactor-0.7*\unitfactor) node (cf\thecallevel) {}
   (#4.\threadbias)+(0,-\theseqlevel*\unitfactor-0.7*\unitfactor) node (ct\thecallevel) {};
   
-  \draw[-Latex] ({cf\thecallevel}) -- (ct\thecallevel)
+  \draw[-{Triangle[scale=2]}] ({cf\thecallevel}) -- (ct\thecallevel)
   node[near start,  above] {#3};
   \def\l\thecallevel{#1}
   \def\f\thecallevel{#2}
@@ -50,6 +50,7 @@
 		\tikzstyle{inststyle}=[rectangle, draw, anchor=west, minimum height=0.8cm, minimum width=1.6cm, fill=siipink, rounded corners=3mm]
 
 		\newthread[siipink]{client}{Client}
+		
 		\newthread[siipink][7]{server}{Server}
 		
 		\begin{messcall}{client}{\shortstack[l]{\phantom{Client Key Exchange} \\ Client Hello}}{server}\end{messcall} \postlevel\postlevel
