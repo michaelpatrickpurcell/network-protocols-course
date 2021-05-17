@@ -1,0 +1,131 @@
+\documentclass[aspectratio=169]{beamer}
+    
+\usetheme{sii}
+
+\usepackage[underline=false, rounded corners = true]{pgf-umlsd}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shadows}
+\usetikzlibrary{arrows.meta}
+
+% new command for adding a distance option for threads as well
+% \newthread[color][distance]{id}{title}
+\RequirePackage{xargs}
+\renewcommandx{\newthread}[4][1=gray!30, 2=0.2]{
+  \newinst[#2]{#3}{#4}
+  \stepcounter{threadnum}
+  \node[below of=inst\theinstnum,node distance=0.8cm] (thread\thethreadnum) {};
+  \tikzstyle{threadcolor\thethreadnum}=[fill=#1]
+  \tikzstyle{instcolor#3}=[fill=#1]
+}
+
+\renewenvironment{messcall}[4][1]{
+  \stepcounter{seqlevel}
+  \stepcounter{callevel} % push
+  \path
+  (#2)+(0,-\theseqlevel*\unitfactor-0.7*\unitfactor) node (cf\thecallevel) {}
+  (#4.\threadbias)+(0,-\theseqlevel*\unitfactor-0.7*\unitfactor) node (ct\thecallevel) {};
+  
+  \draw[-Latex] ({cf\thecallevel}) -- (ct\thecallevel)
+  node[near start,  above] {#3};
+  \def\l\thecallevel{#1}
+  \def\f\thecallevel{#2}
+  \def\t\thecallevel{#4}
+  \tikzstyle{threadstyle}+=[instcolor#2]
+}
+
+
+\title{SSL/TLS: Overview}
+\author{Michael Purcell}
+\date{01 June 2021}
+\begin{document}
+
+\begin{frame}[Roundel=siiorange]
+\titlepage
+\end{frame}
+
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{TLS Handshake}
+	\begin{sequencediagram}
+		\tikzstyle{inststyle}=[rectangle, draw, anchor=west, minimum height=0.8cm, minimum width=1.6cm, fill=siiblue, rounded corners=3mm]
+
+		\newthread[siiblue]{client}{Client}
+		\newthread[siiblue][7]{server}{Server}
+		
+		\begin{messcall}{client}{\shortstack[l]{\phantom{Client Key Exchange} \\ Client Hello}}{server}\end{messcall} \postlevel\postlevel
+		
+		\begin{messcall}{server}{\shortstack[r]{Server Hello \\ Server Certificate \\ Server Key Exchange}}{client} \end{messcall} \postlevel
+
+		\begin{messcall}{client}{\shortstack[l]{Client Key Exchange \\ Client Finish}}{server}\end{messcall} \postlevel
+		
+		\begin{messcall}{server}{\shortstack[r]{\phantom{Server Key Exchange} \\ Server Finish}}{client}\end{messcall}
+	\end{sequencediagram}
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Client Hello}
+	The SSL/TLS handshake begins with a "Client Hello" message in which the client sends the following information to the server:
+	\begin{itemize}
+		\item The highest protocol version number that the client supports
+		\item A 32-byte random number
+		\item A session ID
+		\item A list of supported cipher suites.  Each cipher suite defines three cryptographic algorithms:
+			\begin{itemize}
+				\item A key negotiation algorithm
+				\item An encryption algorithms
+				\item A MAC (message authentication code) algorithm
+			\end{itemize}
+		\item Supported compression methods
+		\item A list of protocol extensions that the client supports
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Server Hello}
+	The server responds with a "Server Hello" message in which the server sends the following information to the client:
+	\begin{itemize}
+		\item The selected protocol version number
+		\item A 32-byte random number
+		\item A Session ID
+		\item The selected cipher suite
+		\item The selected compression method
+		\item A list of the requested protocol extensions that the server will provide
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Pre-Master Secret}
+	test
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Client Finish}
+	test
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Server Finish}
+	test
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{References}
+	\begin{itemize}
+		\item The book "SSL/TLS Under Lock and Key: A Guide to Understanding SSL/TLS" Cryptography by Paul Baka and Jeremy Schatten
+		\item The blog "Command Line Fanatic" by Jeremy Davies
+		\begin{itemize}
+			\item "The TLS Handshake at a High Level"
+			\item "A walk-through of an SSL handshake"
+			\item "SSL Key Exchange example"
+			\item "SSL Certificate Exchange"
+			\item "SSL OCSP Exchange"
+		\end{itemize}		
+		\item RFC 5246 - "The Transport Layer Security (TLS) Protocol Version 1.2"
+		\begin{itemize}
+			\item Section 7 - "The TLS Handshaking Protocols"
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\end{document}
