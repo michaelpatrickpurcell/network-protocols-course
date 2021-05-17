@@ -47,10 +47,10 @@
 \begin{frame}[roundel=siiblue]
 	\frametitle{TLS Handshake}
 	\begin{sequencediagram}
-		\tikzstyle{inststyle}=[rectangle, draw, anchor=west, minimum height=0.8cm, minimum width=1.6cm, fill=siiblue, rounded corners=3mm]
+		\tikzstyle{inststyle}=[rectangle, draw, anchor=west, minimum height=0.8cm, minimum width=1.6cm, fill=siipink, rounded corners=3mm]
 
-		\newthread[siiblue]{client}{Client}
-		\newthread[siiblue][7]{server}{Server}
+		\newthread[siipink]{client}{Client}
+		\newthread[siipink][7]{server}{Server}
 		
 		\begin{messcall}{client}{\shortstack[l]{\phantom{Client Key Exchange} \\ Client Hello}}{server}\end{messcall} \postlevel\postlevel
 		
@@ -95,7 +95,17 @@
 
 
 \begin{frame}[roundel=siiblue]
-	\frametitle{Pre-Master Secret}
+	\frametitle{Server Certificate}
+	test
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Server Key Exchange}
+	test
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Client Key Exchange}
 	test
 \end{frame}
 
