@@ -48,7 +48,7 @@
 \end{frame}
 
 
-\begin{frame}[roundel=siiblue]
+\begin{frame}
 	\frametitle{TLS 1.2 Handshake}
 	\begin{sequencediagram}
 		\tikzstyle{inststyle}=[rectangle, draw, anchor=west, minimum height=0.8cm, minimum width=1.6cm, fill=siipink, rounded corners=3mm]
@@ -109,7 +109,7 @@
 	Remark: TLS 1.3 does not use the "Legacy Version" field in the TLS Handshake message format to specify the version of the protocol which the client is requesting.  Rather, this is done via the "Supported Versions" extension.
 \end{frame}
 
-\begin{frame}[roundel=siiblue]
+\begin{frame}
 	\frametitle{Client Hello Message}
 	The SSL/TLS handshake begins with a "Client Hello" message in which the client sends the following information to the server:
 	\begin{itemize}
@@ -127,7 +127,7 @@
 	\end{itemize}
 \end{frame}
 
-\begin{frame}[roundel=siiblue]
+\begin{frame}
 	\frametitle{Server Hello Message}
 	The server responds with a "Server Hello" message in which the server sends the following information to the client:
 	\begin{itemize}
@@ -141,7 +141,7 @@
 \end{frame}
 
 
-\begin{frame}[roundel=siiblue]
+\begin{frame}
 	\frametitle{Server Certificate Message}
 	The server then sends a "Server Certificate" message conveys the server's certificate chain to the client.  
 	
@@ -154,7 +154,7 @@
 	\end{itemize}
 \end{frame}
 
-\begin{frame}[roundel=siiblue]
+\begin{frame}
 	\frametitle{Server Key Exchange Message}	
 	The server then sends the "Server Key Exchange" message which conveys cryptographic information to allow the client to communicate the premaster secret.
 	
@@ -173,7 +173,20 @@
 	
 \end{frame}
 
-\begin{frame}[roundel=siiblue]
+\begin{frame}
+	\frametitle{Server Hello Done Message}
+	The server concludes this portion of the TLS handshake by sending the "Server Hello Done" message which tells the client to proceed to the next phase of the protocol.
+	
+	\vfill
+	
+	This message is needed because there are several variations of the protocol in which some of the server's messages can be omitted.
+	
+	\vfill
+	
+	This message includes no message data. The value for the "Message Type" field identifies the message as a "Server Hello Done" message and no additional content is required.
+\end{frame}
+
+\begin{frame}
 	\frametitle{Client Key Exchange Message}
 	The client responds with the "Client Key Exchange" message which conveys cryptographic information to allow the server to compute the premaster secret.
 	
@@ -193,7 +206,7 @@
 
 \end{frame}
 
-\begin{frame}[roundel=siiblue]
+\begin{frame}
 	\frametitle{Change Cipher Spec Message}
 	Both the client and server send a "Change Cipher Spec" message immediately before sending their respective "Finished" messages.
 	
@@ -225,7 +238,7 @@
 
 \end{frame}
 
-\begin{frame}[roundel=siiblue]
+\begin{frame}
 	\frametitle{Finished Messages}
 	Both parties conclude the TLS Handshake by sending "Finished" messages which allow them to verify that they can successfully decrypt and authenticate records sent by the other party.
 	
@@ -244,7 +257,7 @@
 		
 \end{frame}
 
-\begin{frame}[roundel=siiblue]
+\begin{frame}
 	\frametitle{References}
 	\begin{itemize}
 		\item The website "The Illustrated TLS Connection" by Michael Driscoll et al (https://tls.ulfheim.net)
