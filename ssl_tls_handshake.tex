@@ -1,0 +1,267 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{sii}
+
+\usepackage[underline=false, rounded corners = true]{pgf-umlsd}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shadows}
+\usetikzlibrary{arrows.meta}
+
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{array}
+
+% new command for adding a distance option for threads as well
+% \newthread[color][distance]{id}{title}
+\RequirePackage{xargs}
+\renewcommandx{\newthread}[4][1=gray!30, 2=0.2]{
+  \newinst[#2]{#3}{#4}
+  \stepcounter{threadnum}
+  \node[below of=inst\theinstnum,node distance=0.8cm] (thread\thethreadnum) {};
+  \tikzstyle{threadcolor\thethreadnum}=[fill=#1]
+  \tikzstyle{instcolor#3}=[fill=#1]
+}
+
+\renewenvironment{messcall}[4][1]{
+  \stepcounter{seqlevel}
+  \stepcounter{callevel} % push
+  \path
+  (#2)+(0,-\theseqlevel*\unitfactor-0.7*\unitfactor) node (cf\thecallevel) {}
+  (#4.\threadbias)+(0,-\theseqlevel*\unitfactor-0.7*\unitfactor) node (ct\thecallevel) {};
+  
+  \draw[-{Triangle[scale=2]}] ({cf\thecallevel}) -- (ct\thecallevel)
+  node[near start,  above] {#3};
+  \def\l\thecallevel{#1}
+  \def\f\thecallevel{#2}
+  \def\t\thecallevel{#4}
+  \tikzstyle{threadstyle}+=[instcolor#2]
+}
+
+
+\title{SSL/TLS: Handshake}
+\author{Michael Purcell}
+\date{01 June 2021}
+\begin{document}
+
+\begin{frame}[Roundel=siiorange]
+\titlepage
+\end{frame}
+
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{TLS 1.2 Handshake}
+	\begin{sequencediagram}
+		\tikzstyle{inststyle}=[rectangle, draw, anchor=west, minimum height=0.8cm, minimum width=1.6cm, fill=siipink, rounded corners=3mm]
+
+		\newthread[siipink]{client}{Client}
+		
+		\newthread[siipink][7]{server}{Server}
+		
+		\begin{messcall}{client}{\shortstack[l]{\phantom{Change Cipher Spec)} \\ Client Hello}}{server}\end{messcall} \postlevel\postlevel
+		
+		\begin{messcall}{server}{\shortstack[r]{Server Hello \\ Server Certificate \\ Server Key Exchange \\ Server Hello Done}}{client} \end{messcall} \postlevel\postlevel
+
+		\begin{messcall}{client}{\shortstack[l]{Client Key Exchange \\ (Change Cipher Spec) \\ Finished}}{server}\end{messcall} \postlevel
+		
+		\begin{messcall}{server}{\shortstack[r]{\phantom{Server Key Exchange} \\ (Change Cipher Spec) \\ Finished}}{client}\end{messcall}
+	\end{sequencediagram}
+\end{frame}
+
+\begin{frame}[blank]
+	\frametitle{TLS Handshake Message Format}
+	\begin{table}
+	\centering
+		\begin{tabular}{|>{\columncolor{siipink}} c | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash}m{7em} |}
+		\hline
+		\rowcolor{siipink}Offset & Offset $+0$ & Offset $+1$ & Offset $+2$ & Offset $+3$ \\ \hline
+		  & \cellcolor{siipink} Content Type & \multicolumn{3}{>{\columncolor{siibrown}} c |}{}  \\ \cline{2-2}
+		\multirow{-2}{*}{\texttt{0x00}} & \texttt{0x16} & \multicolumn{3}{>{\columncolor{siibrown}}c |}{\multirow{-2}{*}{}}\\ \hline
+		 &\multicolumn{2}{>{\columncolor{siipink}}c |}{Legacy Version} & \multicolumn{2}{ >{\columncolor{siipink}}c | }{Length} \\ \cline{2-5}
+		\multirow{-2}{*}{\texttt{0x01}} & (major) & (minor) & & \\ \hline
+		& \cellcolor{siipink} Message Type & \multicolumn{3}{>{\columncolor{siipink}} c |}{Handshake Message Data Length} \\ \cline{2-5}
+		\multirow{-2}{*}{\texttt{0x05}}  & & & & \\ \hline
+		& \multicolumn{4}{>{\columncolor{siipink}}c |}{Handshake Message Data} \\ \cline{2-5}
+		\multirow{-2}{*}{\texttt{0x09}} & & & & \\ \hline
+		& \multicolumn{4}{>{\columncolor{siipink}}c |}{Handshake Message Data (Continued)} \\ \cline{2-5}
+		\multirow{-2}{*}{$\vdots$} & & & & \\ \hline		
+		\end{tabular}
+	\end{table}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Version Numbers}
+	Version numbers for SSL/TLS are a mess.  Due to some convoluted historical reasoning we have:
+	\begin{table}
+		\centering
+		\begin{tabular}{c c}
+			Version Name & Version Number \\ \hline
+			SSL 2.0 & \texttt{0x0200} \\
+			SSL 3.0 & \texttt{0x0300} \\
+			TLS 1.0 & \texttt{0x0301} \\
+			TLS 1.1 & \texttt{0x0302} \\
+			TLS 1.2 & \texttt{0x0303} \\
+			TLS 1.3 & \texttt{0x0304} 
+		\end{tabular}
+	\end{table}
+	
+	\vfill
+	
+	Remark: TLS 1.3 does not use the "Legacy Version" field in the TLS Handshake message format to specify the version of the protocol which the client is requesting.  Rather, this is done via the "Supported Versions" extension.
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Client Hello Message}
+	The SSL/TLS handshake begins with a "Client Hello" message in which the client sends the following information to the server:
+	\begin{itemize}
+		\item The highest protocol version number that the client supports
+		\item A 32-byte random number
+		\item A session ID
+		\item A list of supported cipher suites.  Each cipher suite defines three cryptographic algorithms:
+			\begin{itemize}
+				\item A key negotiation algorithm
+				\item An encryption algorithms
+				\item A MAC (message authentication code) algorithm
+			\end{itemize}
+		\item Supported compression methods
+		\item A list of protocol extensions that the client supports
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Server Hello Message}
+	The server responds with a "Server Hello" message in which the server sends the following information to the client:
+	\begin{itemize}
+		\item The selected protocol version number
+		\item A 32-byte random number
+		\item A Session ID
+		\item The selected cipher suite
+		\item The selected compression method
+		\item A list of the requested protocol extensions that the server will provide
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Server Certificate Message}
+	The server then sends a "Server Certificate" message conveys the server's certificate chain to the client.  
+	
+	\vfill
+	
+	This message includes:
+	\begin{itemize}
+		\item The server's \texttt{x.509v3} certificate
+		\item Any intermediate certificates that the client will need to authenticate the server's identity
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Server Key Exchange Message}	
+	The server then sends the "Server Key Exchange" message which conveys cryptographic information to allow the client to communicate the premaster secret.
+	
+	\vfill
+	
+		Some key exchange methods (e.g. \texttt{RSA},  \texttt{DH\_DSS}, \texttt{DH\_RSA}) do not require the server to send any cryptographic information to the client.  In such cases, this message is omitted.
+
+	\vfill
+	
+	If ephemeral Diffie-Hellman is the selected key exchange method, (e.g. \texttt{DHE\_DSS}, \texttt{DHE\_RSA})  then this message includes:
+	\begin{itemize}
+		\item The prime modulus used for the Diffie-Hellman operation
+		\item The generator used for the Diffie-Hellman operation
+		\item The server's Diffie-Hellman public value
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Client Key Exchange Message}
+	The client responds with the "Client Key Exchange" message which conveys cryptographic information to allow the server to compute the premaster secret.
+	
+	\vfill	
+	
+	Some key exchange methods require the client to compute the premaster secret and send the encrypted result to the server. In such cases, this message includes:
+	\begin{itemize}
+		\item A 48-byte premaster secret encrypted using the server's public key
+	\end{itemize}
+	
+	\vfill	
+	
+	If Diffie-Hellman is the selected key exchange method, then this message includes:
+	\begin{itemize}
+		\item The client's Diffie-Hellman public value	
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Change Cipher Spec Message}
+	Both the client and server send a "Change Cipher Spec" message immediately before sending their respective "Finished" messages.
+	
+	\vfill
+	
+	These messages indicate to the receiving parties that subsequent records will be
+   protected under the newly negotiated Cipher Spec and keys.
+   
+   \vfill
+   
+   The TLS Change Cipher Spec protocol from the TLS Handshake protocol.  This ensures that the Change Cipher Spec message interrupts the stream of TLS Handshake message and ensures that the subsequent "Finished" messages will be properly encrypted.
+\end{frame}
+
+\begin{frame}[blank]
+	\frametitle{TLS CCS Message Format}
+		\begin{table}
+	\centering
+		\begin{tabular}{|>{\columncolor{siipink}} c | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash}m{7em} |}
+		\hline
+		\rowcolor{siipink}Offset & Offset $+0$ & Offset $+1$ & Offset $+2$ & Offset $+3$ \\ \hline
+		  & \cellcolor{siipink} Content Type & \multicolumn{3}{>{\columncolor{siibrown}} c |}{}  \\ \cline{2-2}
+		\multirow{-2}{*}{\texttt{0x00}} & \texttt{0x14} & \multicolumn{3}{>{\columncolor{siibrown}}c |}{\multirow{-2}{*}{}}\\ \hline
+		 &\multicolumn{2}{>{\columncolor{siipink}}c |}{Legacy Version} & \multicolumn{2}{ >{\columncolor{siipink}}c | }{Length} \\ \cline{2-5}
+		\multirow{-2}{*}{\texttt{0x01}} & (major) & (minor) & 0 & 1 \\ \hline
+		& \cellcolor{siipink} Protocol Type &  \multicolumn{3}{>{\columncolor{siibrown}} c |}{}  \\ \cline{2-2}
+		\multirow{-2}{*}{\texttt{0x05}}  & 1 & \multicolumn{3}{>{\columncolor{siibrown}}c |}{\multirow{-2}{*}{}}\\ \hline
+		\end{tabular}
+	\end{table}
+
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{Finished Messages}
+	Both parties conclude the TLS Handshake by sending "Finished" messages which allow them to verify that they can successfully decrypt and authenticate records sent by the other party.
+	
+	\vfill
+	
+	These messages are encrypted and authenticated using the negotiated Cipher Spec.
+	
+	\vfill
+	
+	These messages include:
+	\begin{itemize}
+		\item A \texttt{verify\_data} field which is computed using all previous TLS Handshake messages
+		\item A MAC of the record header and message data   
+		\item Any padding necessary to facilitate encryption by a block cipher (e.g. \text{AES})
+	\end{itemize}
+		
+\end{frame}
+
+\begin{frame}[roundel=siiblue]
+	\frametitle{References}
+	\begin{itemize}
+		\item The website "The Illustrated TLS Connection" by Michael Driscoll et al (https://tls.ulfheim.net)
+		\item The book "SSL/TLS Under Lock and Key: A Guide to Understanding SSL/TLS" Cryptography by Paul Baka and Jeremy Schatten
+		\item The blog "Command Line Fanatic" by Jeremy Davies
+		\begin{itemize}
+			\item "The TLS Handshake at a High Level"
+			\item "A walk-through of an SSL handshake"
+			\item "SSL Key Exchange example"
+			\item "SSL Certificate Exchange"
+			\item "SSL OCSP Exchange"
+		\end{itemize}		
+		\item RFC 5246 - "The Transport Layer Security (TLS) Protocol Version 1.2"
+		\begin{itemize}
+			\item Section 7 - "The TLS Handshaking Protocols"
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\end{document}
