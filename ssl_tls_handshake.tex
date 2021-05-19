@@ -186,6 +186,24 @@
 	This message includes no message data. The value for the "Message Type" field identifies the message as a "Server Hello Done" message and no additional content is required.
 \end{frame}
 
+\begin{frame}[blank]
+	\frametitle{Server Hello Done Details}
+	\begin{table}
+	\centering
+		\begin{tabular}{|>{\columncolor{siipink}} c | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash}m{7em} |}
+		\hline
+		\rowcolor{siipink}Offset & Offset $+0$ & Offset $+1$ & Offset $+2$ & Offset $+3$ \\ \hline
+		  & \cellcolor{siipink} Content Type & \multicolumn{3}{>{\columncolor{siibrown}} c |}{}  \\ \cline{2-2}
+		\multirow{-2}{*}{\texttt{0x00}} & \texttt{0x16} & \multicolumn{3}{>{\columncolor{siibrown}}c |}{\multirow{-2}{*}{}}\\ \hline
+		 &\multicolumn{2}{>{\columncolor{siipink}}c |}{Legacy Version} & \multicolumn{2}{ >{\columncolor{siipink}}c | }{Length} \\ \cline{2-5}
+		\multirow{-2}{*}{\texttt{0x01}} & (major) & (minor) & \texttt{0x00} & \texttt{0x04}\\ \hline
+		& \cellcolor{siipink} Message Type & \multicolumn{3}{>{\columncolor{siipink}} c |}{Handshake Message Data Length} \\ \cline{2-5}
+		\multirow{-2}{*}{\texttt{0x05}}  & \texttt{0x0e} & \texttt{0x00} &  \texttt{0x00} &  \texttt{0x00} \\ \hline
+		\end{tabular}
+	\end{table}
+\end{frame}
+
+
 \begin{frame}
 	\frametitle{Client Key Exchange Message}
 	The client responds with the "Client Key Exchange" message which conveys cryptographic information to allow the server to compute the premaster secret.
@@ -208,7 +226,7 @@
 
 \begin{frame}
 	\frametitle{Change Cipher Spec Message}
-	Both the client and server send a "Change Cipher Spec" message immediately before sending their respective "Finished" messages.
+	Both the client and server send a "Change Cipher Spec" (CCS) message immediately before sending their respective "Finished" messages.
 	
 	\vfill
 	
@@ -221,7 +239,7 @@
 \end{frame}
 
 \begin{frame}[blank]
-	\frametitle{TLS CCS Message Format}
+	\frametitle{CCS Message Format}
 		\begin{table}
 	\centering
 		\begin{tabular}{|>{\columncolor{siipink}} c | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash} m{7em} | >{\centering\arraybackslash}m{7em} |}
@@ -230,9 +248,9 @@
 		  & \cellcolor{siipink} Content Type & \multicolumn{3}{>{\columncolor{siibrown}} c |}{}  \\ \cline{2-2}
 		\multirow{-2}{*}{\texttt{0x00}} & \texttt{0x14} & \multicolumn{3}{>{\columncolor{siibrown}}c |}{\multirow{-2}{*}{}}\\ \hline
 		 &\multicolumn{2}{>{\columncolor{siipink}}c |}{Legacy Version} & \multicolumn{2}{ >{\columncolor{siipink}}c | }{Length} \\ \cline{2-5}
-		\multirow{-2}{*}{\texttt{0x01}} & (major) & (minor) & 0 & 1 \\ \hline
+		\multirow{-2}{*}{\texttt{0x01}} & (major) & (minor) & \texttt{0x00} & \texttt{0x01} \\ \hline
 		& \cellcolor{siipink} Protocol Type &  \multicolumn{3}{>{\columncolor{siibrown}} c |}{}  \\ \cline{2-2}
-		\multirow{-2}{*}{\texttt{0x05}}  & 1 & \multicolumn{3}{>{\columncolor{siibrown}}c |}{\multirow{-2}{*}{}}\\ \hline
+		\multirow{-2}{*}{\texttt{0x05}}  & \texttt{0x01} & \multicolumn{3}{>{\columncolor{siibrown}}c |}{\multirow{-2}{*}{}}\\ \hline
 		\end{tabular}
 	\end{table}
 
