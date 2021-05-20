@@ -1,0 +1,117 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{sii}
+
+\title{SSL/TLS: Encryption}
+\author{Michael Purcell}
+\date{01 June 2021}
+\begin{document}
+
+\begin{frame}[Roundel=siiorange]
+\titlepage
+\end{frame}
+
+\section{The Pseudorandom Function}
+
+\begin{frame}[Roundel=siiorange]
+	\tocpage
+\end{frame}
+
+\begin{frame}
+	\frametitle{Cipher Suites}
+	A cipher suite is a set of cryptographic algorithms that can be used to secure a SSL/TLS session. An SSL/TLS cipher suite consists of:
+	\begin{itemize}
+		\item A key exchange algorithm
+		\item An authentication algorithm (used during the handshake)
+		\item A bulk encryption algorithm
+		\item A message authentication code (MAC) algorithm
+	\end{itemize}
+	
+	\vfill
+	
+	The primary purpose of the SSL/TLS Handshake is to establish which cipher suite will be used during the subsequent session.
+\end{frame}
+
+\begin{frame}
+	\frametitle{HMAC}
+	Given a hash function \texttt{hash}, we define
+	\begin{equation} \nonumber
+		\texttt{HMAC\_hash}(\texttt{k}, \texttt{m}) = \texttt{hash}\left((\texttt{k'} \oplus \texttt{opad}) \ \Vert \  \texttt{hash}\left((\texttt{k'} \oplus \texttt{ipad}) \ \Vert \ \texttt{m} \right)\right)
+	\end{equation}
+	where $\texttt{opad} = \texttt{0x5c5c\ldots 5c}$, $\texttt{ipad} = \texttt{0x3636\ldots 36}$, and \texttt{k'} is a block-sized key derived from \texttt{k}.  That is
+	\begin{align*}
+		\texttt{k'} &=
+		\begin{cases}
+			\texttt{hash}(\texttt{k}) & \text{if \texttt{k} is larger than the block size}; \\
+			\texttt{k} & \text{otherwise}.
+		\end{cases} \\
+	\end{align*}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{The Pseudorandom Function}
+	We have
+	\begin{equation} \nonumber
+		\texttt{PRF}(\texttt{secret}, \texttt{label}, \texttt{seed}) = \texttt{P\_hash}(\texttt{secret}, \texttt{label} \ \Vert \  \texttt{seed})
+	\end{equation}
+	where
+	\begin{equation} \nonumber
+	\begin{split}
+		\texttt{P\_hash}(\texttt{secret}, \texttt{seed}) = \ &\texttt{HMAC\_hash}(\texttt{secret}, \texttt{A}(1) \ \Vert \  \texttt{seed})\\
+		&\ \Vert \ \texttt{HMAC\_hash}(\texttt{secret}, \texttt{A}(2) \ \Vert \  \texttt{seed}) \\
+		&\ \Vert \ \texttt{HMAC\_hash}(\texttt{secret}, \texttt{A}(3) \ \Vert \  \texttt{seed}) \\
+		&\qquad \vdots
+	\end{split}
+	\end{equation}
+\end{frame}
+
+\section{Key Calculation}
+\begin{frame}[Roundel=siiorange]
+	\tocpage
+\end{frame}
+
+\begin{frame}
+	\frametitle{Compute the Master Secret}
+	Let $\texttt{cs\_random}$ be the concatenation of the random bytes supplied by the client and server during the TLS Handshake. That is
+	\begin{equation} \nonumber
+	\texttt{cs\_random} = \texttt{client\_random} \ \Vert \ \texttt{server\_random}.
+	\end{equation}
+	Then we compute the value of \texttt{master\_secret} via
+	\begin{align*}
+		\texttt{master\_secret} = \texttt{PRF}(&\texttt{pre\_master\_secret},\\
+		&\texttt{"master secret"},\\
+		&\texttt{cs\_random})[0\ldots 47].
+	\end{align*}
+	
+	\vfill
+	
+	Notice that \texttt{master\_secret} is always 48 bytes long.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Key Calculation}
+	Let $\texttt{sc\_random}$ be the concatenation of the random bytes supplied by the server and client during the TLS Handshake. Notice that the order is reversed form that used in the computation of \texttt{master\_secret}. That is
+	\begin{equation} \nonumber
+	\texttt{sc\_random} = \texttt{server\_random} \ \Vert \ \texttt{client\_random}.
+	\end{equation}
+	Then we compute the value of \texttt{key\_block} via
+	\begin{equation} \nonumber
+	\begin{split}
+		\texttt{key\_block} = \texttt{PRF}(&\texttt{master\_secret}, \\
+		&\texttt{"key expansion"},\\
+		&\texttt{sc\_random})[0\ldots \texttt{n-1}]
+	\end{split}
+	\end{equation}
+	where \texttt{n} is the required number of bytes of key material.
+\end{frame}
+
+\section{Record Payload Protection}
+\begin{frame}[Roundel=siiorange]
+	\tocpage
+\end{frame}
+
+\begin{frame}
+	test
+\end{frame}
+\end{document}
