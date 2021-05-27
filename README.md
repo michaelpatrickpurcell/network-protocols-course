@@ -2,7 +2,7 @@
 
 ## Syllabus
 
-|  | Morning Lecture | Morning Exercise | Afternoon Lecture | Afternoon Exercise |
+| &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | Morning Lecture | Morning Exercise | Afternoon Lecture | Afternoon Exercise |
 | :-- | :-- | :-- | :-- | :-- |
 | Day 1 | Introduction to Computer Networks | Using Network Utilities | Low-Level Protocols | Exploring the Lab Network |
 | Day 2 | The TCP/IP Protocol Suite | Inspecting Network Traffic | Socket Programming | Generating Network Traffic |
