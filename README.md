@@ -1,8 +1,10 @@
 # Introduction to Network Protocols
 
+A short course intended to introduce junior analysts to network protocols.
+
 ## Syllabus
 
-This course is designed to be taught over a period of five days.  Each day is subdivided into four sessions. The first and third sessions each day are intended to be lectures. The second and fourth sessions are intended to be time for hands-on exercises that reinforce the material covered in the lectures.
+This course is designed to be taught over a period of five days.  Each day is subdivided into four sessions. The first and third sessions each day are traditional classroom lectures. The second and fourth sessions are time for students to do hands-on exercises that reinforce the material covered in the lectures.
 
 | &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | Morning Lecture | Morning Exercise | Afternoon Lecture | Afternoon Exercise |
 | :-- | :-- | :-- | :-- | :-- |
