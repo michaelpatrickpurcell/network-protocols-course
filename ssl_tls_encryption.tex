@@ -11,8 +11,7 @@
 \titlepage
 \end{frame}
 
-\section{The Pseudorandom Function}
-
+\section{Cipher Suites}
 \begin{frame}[Roundel=siiorange]
 	\tocpage
 \end{frame}
@@ -22,7 +21,7 @@
 	A cipher suite is a set of cryptographic algorithms that can be used to secure a SSL/TLS session. An SSL/TLS cipher suite consists of:
 	\begin{itemize}
 		\item A key exchange algorithm
-		\item An authentication algorithm (used during the handshake)
+		\item An authentication algorithm
 		\item A bulk encryption algorithm
 		\item A message authentication code (MAC) algorithm
 	\end{itemize}
@@ -30,6 +29,35 @@
 	\vfill
 	
 	The primary purpose of the SSL/TLS Handshake is to establish which cipher suite will be used during the subsequent session.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Example Cipher Suites}
+	Modern cipher suites that are believed to be secure:
+	\begin{itemize}
+		\item \texttt{TLS\_ECDHE\_ECDSA\_WITH\_AES\_256\_GCM\_SHA384}
+		\item \texttt{TLS\_ECDHE\_RSA\_WITH\_AES\_128\_CBC\_SHA256}
+		\item \texttt{TLS\_DHE\_RSA\_WITH\_CHACHA20\_POLY1305\_SHA256}
+	\end{itemize}
+	
+	\vfill
+	
+	Legacy cipher suites that may be insecure:
+	\begin{itemize}		
+		\item \texttt{TLS\_RSA\_WITH\_RC4\_128\_MD5}
+		\begin{itemize}
+			\item Both \texttt{RC4} and \texttt{MD5} are known to be insecure and should not be used in modern applications.
+		\end{itemize}
+		\item \texttt{TLS\_DH\_DSS\_WITH\_3DES\_EDE\_CBC\_SHA}
+		\begin{itemize}
+			\item The small block size of \texttt{3DES} (64 bits) makes it unsuitable to handle high-volume traffic as as demonstrated by the "Sweet32" attack.
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\section{The Pseudorandom Function}
+\begin{frame}[Roundel=siiorange]
+	\tocpage
 \end{frame}
 
 \begin{frame}
@@ -111,7 +139,190 @@
 	\tocpage
 \end{frame}
 
+\subsection{Legacy Cipher Suites}
 \begin{frame}
-	test
+	\frametitle{MAC-then-encrypt}
+	All of the cipher suites defined in the original description of TLSv1.2 use \texttt{HMAC\_hash} as their MAC algorithm.
+
+	\vfill
+	
+	The MAC is computed on the unencrypted record data.
+	
+	\vfill
+	
+	The bulk encryption algorithm is then used to encrypt both the record data and MAC.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Stream Ciphers}
+	A \emph{stream cipher} generates a key stream which is XORed with the plaintext to produce the ciphertext.
+	
+	\vfill
+	
+	Prior to 2016, RC4 was the only stream cipher used in SSL/TLS cipher suites.
+	
+	\vfill
+	
+	In 2016, cipher suites which use ChaCha20 were introduced by RFC 7905.
+	
+	\vfill
+	
+	Use of RC4 was prohibited in 2015 by RFC 7465
+\end{frame}
+
+\begin{frame}
+	\frametitle{CBC Block Ciphers}
+	A block cipher applies a key-dependent permutation to a \emph{block} of plaintext to produce a block of ciphertext.
+	
+	\vfill
+	
+	AES is used in many SSL/TLS cipher suites.
+	
+	\vfill
+	
+	A \emph{block cipher mode of operation} is an algorithm that allows a block cipher to be used to encrypt a plaintext that consists of more than one block. 
+	
+	\vfill 
+	
+	The original specification for TLSv1.2 included algorithms for using block ciphers in CBC (cipher block chaining) mode to encrypt TLS records.
+\end{frame}
+
+%\begin{frame}
+%	\frametitle{CBC Details}
+%	Encryption:
+%	
+%	\vfill
+%	
+%	Decryption:
+%\end{frame}
+
+\begin{frame}
+	\frametitle{Padding}
+	Block ciphers can only be applied to plaintexts whose length is an integer multiple of the block size.
+	
+	\vfill
+	
+	If a TLS record is not an appropriate length then \emph{padding} must be added.
+
+	\vfill
+	
+	The padding may be any length up to 255 bytes.
+	
+	\vfill
+	
+	Each byte of padding is filled with the padding length value.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Initialization Vector}
+	Using a block cipher in CBC mode requires an initialization vector (IV).
+	
+	\vfill
+	
+	The IV is not secret and is sent in-the-clear immediately prior to the encrypted contents of its associated TLS record.
+	
+	\vfill
+	
+	Despite being sent in-the-clear, the IV for each record must be unpredictable prior to transmission.
+	
+	\vfill
+	
+	Early versions of TLS did not use explicit IVs. Instead, they used the last ciphertext block of the previous record. This allows an attacker compromise the security of the connection as demonstrated by  the so-called "BEAST" attack.
+
+\end{frame}
+\subsection{AEAD Cipher Suites}
+\begin{frame}
+	\frametitle{Authenticated Encryption}
+	Authenticated encryption (AE) combines the functionalities of bulk encryption and message authentication into a single algorithm.
+	
+	\vfill
+	
+	One simple way to create an authenticated encryption algorithm is via the encrypt-then-MAC (EtM) construction.
+	
+	\vfill
+	
+	With EtM, the plaintext is first encrypted and then a MAC is computed (using a different key) for the resulting ciphertext. 
+	
+	\vfill
+	
+	This construction is commonly called the MAC-then-Encrypt (MtE) construction.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Additional Data}
+	Authenticated encryption with associated data (AEAD) is an extension of authenticated encryption that allows a sender to include some data that must be authenticated but does not need to be (or cannot be) encrypted.
+	
+	\vfill
+	
+	One common example of associated data is packet routing information.  If the destination address and/or ports are encrypted, then the packet cannot be delivered.  It can be useful, however, to authenticated the routing information to prevent an attacker from manipulating network traffic flows.
+\end{frame}
+
+\begin{frame}
+	\frametitle{AEAD Algorithms}
+	AEAD algorithms used in SSL/TLS cipher suites include:
+	\begin{itemize}
+		\item AES-GCM (AES - Galois/Counter Mode)
+		\item AES-CCM (AES - Counter with CBC-MAC)
+		\item ChaCha20-Poly1305
+	\end{itemize}
+
+	\vfill
+	
+	The associated data usually consists of a sequence number and information about the compression algorithms applied as part of the TLS protocol.
+\end{frame}
+
+\section{References}
+\begin{frame}[Roundel=siiorange]
+	\tocpage
+\end{frame}
+
+\begin{frame}
+	\frametitle{RFCs}
+	\begin{itemize}
+		\item RFC 5246 - "The Transport Layer Security (TLS) Protocol Version 1.2"
+		
+		\vfill
+				
+		\item RFC 2104 - "HMAC: Keyed-Hashing for Message Authentication"
+
+		\vfill
+				
+		\item RFC 7465 - "Prohibiting RC4 Cipher Suites"
+
+		\vfill
+				
+		\item RFC 7905 - "ChaCha20-Poly1305 Cipher Suites for Transport Layer Security (TLS)"
+
+		\vfill
+				
+		\item RFC 5116 - "An Interface and Algorithms for Authenticated Encryption"
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Other Resources}
+	\begin{itemize}
+		\item The paper "On the Practical (In-)Security of 64-bit Block Ciphers: Collision Attacks on HTTP over TLS and OpenVPN" by Karthikeyan Bhargavan and Ga\"etan Leurent
+		
+		\vfill
+				
+		\item The blog "Command Line Fanatic" by Jeremy Davies
+		\begin{itemize}
+			\item "An Illustrated Guide to the BEAST Attack"
+		\end{itemize}
+		
+		\vfill
+				
+		\item The blog "hashedout" by The SSL Store
+		\begin{itemize}
+			\item "Cipher Suites: Ciphers, Algorithms and Negotiating Security Settings" by Patrick Nohe
+		\end{itemize}
+		
+		\item The blog "Moxie Marlinspike" by Moxie Marlinspike
+		\begin{itemize}
+			\item "The Cryptographic Doom Principle"
+		\end{itemize}
+	\end{itemize}
+	
 \end{frame}
 \end{document}
