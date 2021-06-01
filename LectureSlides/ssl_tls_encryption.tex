@@ -7,16 +7,16 @@
 \date{01 June 2021}
 \begin{document}
 
-\begin{frame}[Roundel=siiorange]
+\begin{frame}[Triangle=siiorange]
 \titlepage
 \end{frame}
 
 \section{Cipher Suites}
-\begin{frame}[Roundel=siiorange]
+\begin{frame}[Triangle=siiorange]
 	\tocpage
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{Cipher Suites}
 	A cipher suite is a set of cryptographic algorithms that can be used to secure a SSL/TLS session. An SSL/TLS cipher suite consists of:
 	\begin{itemize}
@@ -31,7 +31,7 @@
 	The primary purpose of the SSL/TLS Handshake is to establish which cipher suite will be used during the subsequent session.
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{Example Cipher Suites}
 	Modern cipher suites that are believed to be secure:
 	\begin{itemize}
@@ -56,11 +56,11 @@
 \end{frame}
 
 \section{The Pseudorandom Function}
-\begin{frame}[Roundel=siiorange]
+\begin{frame}[Triangle=siiorange]
 	\tocpage
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{HMAC}
 	Given a hash function \texttt{hash}, we define
 	\begin{equation} \nonumber
@@ -77,7 +77,7 @@
 \end{frame}
 
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{The Pseudorandom Function}
 	We have
 	\begin{equation} \nonumber
@@ -95,11 +95,11 @@
 \end{frame}
 
 \section{Key Calculation}
-\begin{frame}[Roundel=siiorange]
+\begin{frame}[Triangle=siiorange]
 	\tocpage
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{Compute the Master Secret}
 	Let $\texttt{cs\_random}$ be the concatenation of the random bytes supplied by the client and server during the TLS Handshake. That is
 	\begin{equation} \nonumber
@@ -117,7 +117,7 @@
 	Notice that \texttt{master\_secret} is always 48 bytes long.
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{Key Calculation}
 	Let $\texttt{sc\_random}$ be the concatenation of the random bytes supplied by the server and client during the TLS Handshake. Notice that the order is reversed form that used in the computation of \texttt{master\_secret}. That is
 	\begin{equation} \nonumber
@@ -135,12 +135,12 @@
 \end{frame}
 
 \section{Record Payload Protection}
-\begin{frame}[Roundel=siiorange]
+\begin{frame}[Triangle=siiorange]
 	\tocpage
 \end{frame}
 
 \subsection{Legacy Cipher Suites}
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{MAC-then-encrypt}
 	All of the cipher suites defined in the original description of TLSv1.2 use \texttt{HMAC\_hash} as their MAC algorithm.
 
@@ -153,7 +153,7 @@
 	The bulk encryption algorithm is then used to encrypt both the record data and MAC.
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{Stream Ciphers}
 	A \emph{stream cipher} generates a key stream which is XORed with the plaintext to produce the ciphertext.
 	
@@ -170,7 +170,7 @@
 	Use of RC4 was prohibited in 2015 by RFC 7465
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{CBC Block Ciphers}
 	A block cipher applies a key-dependent permutation to a \emph{block} of plaintext to produce a block of ciphertext.
 	
@@ -196,7 +196,7 @@
 %	Decryption:
 %\end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{Padding}
 	Block ciphers can only be applied to plaintexts whose length is an integer multiple of the block size.
 	
@@ -213,7 +213,7 @@
 	Each byte of padding is filled with the padding length value.
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{Initialization Vector}
 	Using a block cipher in CBC mode requires an initialization vector (IV).
 	
@@ -231,7 +231,7 @@
 
 \end{frame}
 \subsection{AEAD Cipher Suites}
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{Authenticated Encryption}
 	Authenticated encryption (AE) combines the functionalities of bulk encryption and message authentication into a single algorithm.
 	
@@ -248,7 +248,7 @@
 	This construction is commonly called the MAC-then-Encrypt (MtE) construction.
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{Additional Data}
 	Authenticated encryption with associated data (AEAD) is an extension of authenticated encryption that allows a sender to include some data that must be authenticated but does not need to be (or cannot be) encrypted.
 	
@@ -257,7 +257,7 @@
 	One common example of associated data is packet routing information.  If the destination address and/or ports are encrypted, then the packet cannot be delivered.  It can be useful, however, to authenticated the routing information to prevent an attacker from manipulating network traffic flows.
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{AEAD Algorithms}
 	AEAD algorithms used in SSL/TLS cipher suites include:
 	\begin{itemize}
@@ -272,11 +272,11 @@
 \end{frame}
 
 \section{References}
-\begin{frame}[Roundel=siiorange]
+\begin{frame}[Triangle=siiorange]
 	\tocpage
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{RFCs}
 	\begin{itemize}
 		\item RFC 5246 - "The Transport Layer Security (TLS) Protocol Version 1.2"
@@ -299,7 +299,7 @@
 	\end{itemize}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[triangle=siiblue]
 	\frametitle{Other Resources}
 	\begin{itemize}
 		\item The paper "On the Practical (In-)Security of 64-bit Block Ciphers: Collision Attacks on HTTP over TLS and OpenVPN" by Karthikeyan Bhargavan and Ga\"etan Leurent
