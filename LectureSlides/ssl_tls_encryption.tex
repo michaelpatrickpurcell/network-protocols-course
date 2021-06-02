@@ -151,6 +151,30 @@
 	\vfill
 	
 	The bulk encryption algorithm is then used to encrypt both the record data and MAC.
+	
+	\vfill
+	
+	This is commonly called the MAC-then-Encrypt (MtE) construction.
+\end{frame}
+
+\begin{frame}[triangle=siiblue]
+	\frametitle{Computing The MAC}
+	The MAC is computed on a payload that consists of a sequence number, parameters describing any TLS compression that has been applied, and a TLS record fragment. That is
+	\begin{equation}\nonumber
+	\begin{split}
+		\texttt{payload} = \texttt{seq\_num} &\ \Vert \ \texttt{compressed\_type} \\
+		&\ \Vert \ \texttt{compressed\_version} \\
+		&\ \Vert \ \texttt{compressed\_length} \\
+		&\ \Vert \ \texttt{record\_fragment}.
+	\end{split}
+	\end{equation}
+	
+	\vfill
+	
+	For cipher suites that use the \texttt{HMAC\_hash} as their MAC algorithm, the MAC is given by:
+	\begin{equation}\nonumber
+		\texttt{MAC} = \texttt{HMAC\_hash}\left(\texttt{MAC\_write\_key}, \texttt{payload}\right).
+	\end{equation}
 \end{frame}
 
 \begin{frame}[triangle=siiblue]
@@ -243,9 +267,6 @@
 	
 	With EtM, the plaintext is first encrypted and then a MAC is computed (using a different key) for the resulting ciphertext. 
 	
-	\vfill
-	
-	This construction is commonly called the MAC-then-Encrypt (MtE) construction.
 \end{frame}
 
 \begin{frame}[triangle=siiblue]
@@ -268,7 +289,11 @@
 
 	\vfill
 	
-	The associated data usually consists of a sequence number and information about the compression algorithms applied as part of the TLS protocol.
+	The plaintext for a MAC computing these AEAD algorithm consists of a TLS record fragment.
+	
+	\vfill
+	
+	The associated data consists of a sequence number and information about any TLS compression that has been applied.
 \end{frame}
 
 \section{References}
