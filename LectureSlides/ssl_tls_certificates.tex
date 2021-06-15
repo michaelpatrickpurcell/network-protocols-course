@@ -7,8 +7,149 @@
 \date{01 June 2021}
 \begin{document}
 
-\begin{frame}[Roundel=siiorange]
+\begin{frame}[Triangle=siiorange]
 \titlepage
 \end{frame}
+
+\section{Man-in-the-Middle Attacks}
+\begin{frame}[Triangle=siiorange]
+	\tocpage
+\end{frame}
+
+\begin{frame}[triangle=siiblue]
+	\frametitle{Secure Communications Channel}
+	Alice and Bob want to use an asymmetric encryption scheme establish a secure communications channel.
+	
+	\vfill
+	
+	Accordingly, both parties generate public/private key pairs and share the public keys with one another.
+		
+	\vfill
+	
+	To send a message, the sender uses the recipient's public key to encrypt their transmission. The recipient then uses the corresponding private key to decrypt the transmission that they receive.
+\end{frame}
+
+\begin{frame}[triangle=siiblue]
+	\frametitle{An Active Adversary}
+	Eve wants to eavesdrop on the conversation between Alice and Bob.
+	Wee assume that Eve is an active adversary. That is, we assume that Eve can:
+	\begin{itemize}
+		\item intercept messages sent from Alice to Bob and vice versa.
+		\item send messages to Alice or Bob. 
+	\end{itemize}
+	
+	\vfill
+	
+	If Eve can intercept the messages that Alice and Bob use to share their public keys with one another, then she can carry out a man-in-the-middle (MitM) attack.
+\end{frame}
+
+\begin{frame}[triangle=siiblue]
+	\frametitle{Man-in-the-Middle Attack}
+	When Eve intercepts a key-exchange messages, she replaces the message with on containing a public key for which she knows the corresponding private key.
+	
+	\vfill
+	
+	When Eve intercepts an encrypted message, she:
+	\begin{itemize}
+		\item decrypts the message using her private key.
+		\item inspects and/or modifies the message.
+		\item encrypts the message using the recipient's public key.
+		\item sends the encrypted message to the recipient.
+	\end{itemize}
+\end{frame}
+
+\section{Public Key Certificates}
+\begin{frame}[Triangle=siiorange]
+	\tocpage
+\end{frame}
+
+\begin{frame}[triangle=siiblue]
+	\frametitle{Structure}
+	A public key certificate is an electronic document which is used to prove ownership of a public key.  	Each certificate contains information about:
+	\begin{itemize}
+		\item the subject's identity.
+		\item the subject's public key.
+		\item the issuer's identity.
+		\item the issuer's digital signature.
+	\end{itemize}
+
+	\vfill
+
+	The issuer signs the certificate using the private key associated with a public key that they own.
+\end{frame}
+
+\begin{frame}[triangle=siiblue]
+	\frametitle{Certificate Chains}
+	By signing a public key certificate, the issuer is claiming that the subject is the rightful owner of the public key.
+	
+	\vfill
+	
+	The issuer's public key is used to verify their signature.  
+	
+	\vfill
+	
+	Therefore, the issuer must themselves provide a public key certificate that proves that they are the rightful owner of the public key required to verify their signature.
+\end{frame}
+
+\begin{frame}[triangle=siiblue]
+	\frametitle{Root Certificate Authorities}
+	Certificate chains terminate when they reach a certificate that has been signed by a user whose ownership of a public key has been previously established.
+	
+	\vfill
+	
+	In most certificate ecosystems, certificate chains terminate when they reach a root certificate. Root certificates are self-signed certificates that are trusted by default.
+	
+	\vfill
+	
+	Root certificates identify root certificate authorities which are generally vetted through some mechanism external to the certificate ecosystem. 
+\end{frame}
+
+\section{Certificates in SSL/TLS}
+\begin{frame}[Triangle=siiorange]
+	\tocpage
+\end{frame}
+\subsection{Certificate Messages}
+\begin{frame}[triangle=siiblue]
+	\frametitle{The Server Certificate Message}
+	Test
+\end{frame}
+
+\begin{frame}[triangle=siiblue]
+	\frametitle{The Client Certificate Message}
+	Test
+\end{frame}
+
+\subsection{Key Exchange Messages}
+\begin{frame}[triangle=siiblue]
+	\frametitle{The Server Key Exchange Message}
+	Test
+\end{frame}
+
+\begin{frame}[triangle=siiblue]
+	\frametitle{The Client Key Exchange Message}
+	Test
+\end{frame}
+
+
+\section{References}
+\begin{frame}[Triangle=siiorange]
+	\tocpage
+\end{frame}
+
+\begin{frame}[triangle=siiblue]
+	\frametitle{References}
+	\begin{itemize}
+		\item The blog "Command Line Fanatic" by Jeremy Davies
+		\begin{itemize}
+			\item "SSL Certificate Exchange"
+			\item "SSL "How Certificates Use Digital Signatures"
+		\end{itemize}		
+
+		\vfill
+		
+		\item RFC 5246 - "The Transport Layer Security (TLS) Protocol Version 1.2"
+	\end{itemize}
+\end{frame}
+
 
 \end{document}
